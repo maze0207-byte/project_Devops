@@ -1,27 +1,32 @@
 const express = require("express");
-const cors = require("cors");
 const bodyParser = require("body-parser");
-const { products, messages } = require("./db");
+const cors = require("cors");
 
 const app = express();
+const PORT = 5000;
+
 app.use(cors());
 app.use(bodyParser.json());
 
-// جلب المنتجات
+// Sample products
+const products = [
+  {id:1,name:"Red Dress",desc:"Elegant evening dress",img:"https://images.unsplash.com/photo-1618354691634-5db00ffed888?w=600"},
+  {id:2,name:"Casual Shirt",desc:"Comfortable cotton shirt",img:"https://images.unsplash.com/photo-1520974735194-87b55f14b71f?w=600"},
+  {id:3,name:"Blue Jeans",desc:"Stylish denim",img:"https://images.unsplash.com/photo-1618354829785-915bcab6c6d5?w=600"},
+  {id:4,name:"Sneakers",desc:"Trendy sneakers for everyday",img:"https://images.unsplash.com/photo-1600180801572-b6a8e0f8b845?w=600"},
+];
+
+// GET products
 app.get("/api/products", (req, res) => {
-  res.json(products);
+  res.json({success:true,products});
 });
 
-// إرسال رسالة تواصل
-app.post("/api/contact", (req, res) => {
-  const { name, email, message } = req.body;
-  if(name && email && message){
-    messages.push({ name, email, message });
-    res.json({ success: true });
-  } else {
-    res.json({ success: false });
-  }
+// POST contact
+app.post("/api/contact", (req,res)=>{
+  const {name,email,message} = req.body;
+  console.log("New contact:",name,email,message);
+  // هنا ممكن تضيف إرسال إيميل أو حفظ في قاعدة بيانات
+  res.json({success:true});
 });
 
-const PORT = 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, ()=>console.log(`Server running on http://localhost:${PORT}`));
