@@ -1,9 +1,0 @@
-clothing-store/
-├── backend/
-│   ├── Dockerfile
-│   ├── server.js
-│   ├── db.js
-│   └── package.json
-├── frontend/
-│   ├── Dockerfile
-│   └── index.html
