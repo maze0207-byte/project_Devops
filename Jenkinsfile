@@ -8,53 +8,71 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-                git 'https://github.com/username/your-repo.git' 
+                checkout([$class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[url: 'https://github.com/maze0207-byte/project_Devops.git']]
+                ])
             }
         }
 
-        stage('Build Backend Docker Image') {
+        stage('Build Docker Images') {
             steps {
-                dir('backend-flask') {
-                    sh 'docker build -t $BACKEND_IMAGE .'
-                }
+                bat 'docker-compose build'
             }
         }
 
-        stage('Build Frontend Docker Image') {
+        stage('Start Containers') {
             steps {
-                dir('frontend-html') {
-                    sh 'docker build -t $FRONTEND_IMAGE .'
-                }
+                bat 'docker-compose up -d'
             }
         }
 
-        stage('Stop & Remove Existing Containers') {
+        stage('Test Backend API') {
             steps {
-                sh 'docker-compose down || true'
+                bat 'curl http://localhost:5000/test || exit 1'
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Show Running Containers') {
             steps {
-                sh 'docker-compose up -d --build'
-            }
-        }   
-
-        stage('Verify Services') {
-            steps {
-                sh 'docker ps'
+                bat 'docker ps'
             }
         }
-    }
 
-    post {
-        success {
-            echo " Pipeline executed successfully!"
+        /* -------------------------
+           PROMETHEUS + GRAFANA
+        ------------------------- */
+        stage('Start Monitoring (Prometheus + Grafana)') {
+            steps {
+                echo "Starting Prometheus and Grafana..."
+                bat 'docker-compose up -d prometheus grafana'
+
+                echo "Testing Prometheus endpoint..."
+                bat 'curl http://localhost:9090 || exit 1'
+
+                echo "Testing backend metrics endpoint..."
+                bat 'curl http://localhost:5000/metrics || exit 1'
+            }
         }
-        failure {
-            echo " Pipeline failed!"
+        
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                echo "Pushing Docker image to Docker Hub..."
+                bat 'docker tag backend mazen2025/backend:latest'
+                bat 'docker push mazen2025/backend:latest'
+                bat 'docker tag frontend mazen2025/frontend:latest'
+                bat 'docker push mazen2025/frontend:latest'
+            
+            }
         }
+            
+        post {
+           always {
+                echo "Pipeline finished!"
+           }
+        }  
     }
 }
+       
