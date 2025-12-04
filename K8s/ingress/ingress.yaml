@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: clothing-store-ingress
-  namespace: clothing-store
+  namespace: final-project
   annotations:
     kubernetes.io/ingress.class: "nginx"
 spec:
