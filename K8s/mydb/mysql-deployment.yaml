@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
-  namespace: final-prject
+  namespace: final-project
 spec:
   replicas: 1
   selector:
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: mysql
-          image: mysql:8.0.17
+          image:  mysql:latest
           
           env:
             - name: MYSQL_ROOT_PASSWORD
