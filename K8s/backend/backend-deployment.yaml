@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
-  namespace: clothing-store
+  namespace: final-project
 spec:
   replicas: 1 
   selector:
