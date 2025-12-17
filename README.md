@@ -1,3 +1,35 @@
+# Project DevOps — تشغيل الواجهة المحلية
+
+تعليمات سريعة لتشغيل واجهة الويب الموجودة داخل المجلد `frontend-html` على جهازك المحلي.
+
+- تفعيل بيئة Python الافتراضية (إن وجدت) أو إنشاء واحدة جديدة:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\activate
+```
+
+- تثبيت المتطلبات (من جذر المشروع):
+
+```powershell
+pip install -r requirements.txt
+```
+
+- تشغيل التطبيق (من جذر المشروع):
+
+```powershell
+.\.venv\Scripts\python.exe app.py
+```
+
+أو تشغيل مباشرة من داخل مجلد الواجهة:
+```powershell
+cd frontend-html
+.\.venv\Scripts\python.exe front.py
+```
+
+الواجهة تستمع افتراضياً على `0.0.0.0:5001`.
+
+ملاحظة: إذا صادفت خطأ يتعلق بحزم ناقصة، نفّذ `pip install -r frontend-html/requirements.txt`.
 # 3-tier-Architecture-using-Docker
 
 
