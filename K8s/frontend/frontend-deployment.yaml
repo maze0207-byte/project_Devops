@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: mazen2025/final-project-front:v1
+          image: mazen2025/final-project-front:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5001

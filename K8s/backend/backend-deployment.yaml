@@ -4,7 +4,7 @@ metadata:
   name: backend
   namespace: final-project
 spec:
-  replicas: 1 
+  replicas:  2
   selector:
     matchLabels:
       app: backend
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: mazen2025/final-project:v1
+          image:   mazen2025/final-project:v1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
@@ -31,12 +31,12 @@ spec:
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: app-config
+                  name: myapp
                   key: DB_HOST
             - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: app-config
+                  name: myapp
                   key: DB_PORT
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
