@@ -2,9 +2,8 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from flask_mysqldb import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
-import os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates', static_folder='static')
 CORS(app)
 
 # -----------------------------
@@ -52,9 +51,6 @@ def addrec():
 
     return jsonify({"message": "User registered successfully", "data": data}), 201
 
-# -----------------------------
-# LOGIN API
-# -----------------------------
 @app.route("/login", methods=['POST'])
 def login():
     data = request.get_json()
@@ -75,8 +71,44 @@ def login():
     return jsonify({"message": "Invalid email or password"}), 401
 
 # -----------------------------
-# TEST API
+# DELETE USER API
 # -----------------------------
+@app.route("/delete_user", methods=['DELETE'])
+def delete_user():
+    data = request.get_json()
+    user_id = data.get('id')
+    email = data.get('email')
+
+    if not user_id and not email:
+        return jsonify({"message": "Provide id or email to delete"}), 400
+
+    cur = mysql.connection.cursor()
+
+    try:
+        # تحقق إذا المستخدم موجود
+        if user_id:
+            cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+        else:
+            cur.execute("SELECT * FROM users WHERE email = %s", (email,))
+        user = cur.fetchone()
+
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+
+        # احذف المستخدم
+        if user_id:
+            cur.execute("DELETE FROM users WHERE id = %s", (user_id,))
+        else:
+            cur.execute("DELETE FROM users WHERE email = %s", (email,))
+        mysql.connection.commit()
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({"message": "Error deleting user", "error": str(e)}), 500
+    finally:
+        cur.close()
+
+    return jsonify({"message": "User deleted successfully"}), 200
+
 @app.route("/test", methods=['GET'])
 def test():
     return jsonify({"status": "API is working"}), 200
