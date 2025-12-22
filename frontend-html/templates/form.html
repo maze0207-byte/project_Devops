@@ -5,47 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flask App</title>
     <style>
+        /* خلفية جمالية */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
         }
 
         .container {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 400px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
         }
 
-        input, button {
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input {
             width: 100%;
-            padding: 10px;
-            margin: 5px 0;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 14px;
         }
 
         button {
-            background-color: #4CAF50;
-            color: white;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
             border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            font-size: 16px;
             cursor: pointer;
+            transition: 0.3s;
         }
 
         button:hover {
-            background-color: #45a049;
+            background: linear-gradient(90deg, #764ba2, #667eea);
         }
 
         #message {
-            margin-top: 10px;
+            margin-top: 15px;
             color: green;
+            word-wrap: break-word;
+        }
+
+        form h3 {
+            color: #555;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Register User</h2>
+        <h2>Flask User Management</h2>
+
         <form id="registerForm">
+            <h3>Register User</h3>
             <input type="text" name="id" placeholder="ID" required>
             <input type="text" name="name" placeholder="Name" required>
             <input type="email" name="email" placeholder="Email" required>
@@ -53,8 +81,8 @@
             <button type="submit">Register</button>
         </form>
 
-        <h2>Delete User</h2>
         <form id="deleteForm">
+            <h3>Delete User</h3>
             <input type="text" name="id" placeholder="ID (or leave empty)">
             <input type="email" name="email" placeholder="Email (or leave empty)">
             <button type="submit">Delete</button>
