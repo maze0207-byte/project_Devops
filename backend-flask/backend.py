@@ -1,35 +1,40 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from flask_mysqldb import MySQL
-from prometheus_flask_exporter import PrometheusMetrics
 from werkzeug.security import generate_password_hash, check_password_hash
+from prometheus_flask_exporter import PrometheusMetrics
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates', static_folder='static')
+CORS(app)
 
 # -----------------------------
 # Database Config
 # -----------------------------
-app.config['MYSQL_HOST'] = 'mysql'      # اسم service في docker-compose
+app.config['MYSQL_HOST'] = 'mysql'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''       # حط باسورد لو موجود
+app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'flaskapp'
 
 mysql = MySQL(app)
-CORS(app)
 
 # -----------------------------
 # Prometheus Metrics
 # -----------------------------
 metrics = PrometheusMetrics(app)
-# endpoint /metrics جاهز تلقائي
 
 # -----------------------------
-# REGISTER API
+# ROUTES
 # -----------------------------
-@app.route("/register", methods=['POST'])
-def register():
+@app.route('/')
+def form():
+    return render_template('form.html')
+
+# -----------------------------
+# REGISTER / ADD USER
+# -----------------------------
+@app.route("/addrec", methods=['POST'])
+def addrec():
     data = request.get_json()
-
     user_id = data.get('id')
     name = data.get('name')
     email = data.get('email')
@@ -42,10 +47,7 @@ def register():
 
     cur = mysql.connection.cursor()
     try:
-        query = """
-            INSERT INTO users (id, name, email, password)
-            VALUES (%s, %s, %s, %s)
-        """
+        query = "INSERT INTO users (id, name, email, password) VALUES (%s, %s, %s, %s)"
         cur.execute(query, (user_id, name, email, hashed_password))
         mysql.connection.commit()
     except Exception as e:
@@ -54,7 +56,7 @@ def register():
     finally:
         cur.close()
 
-    return jsonify({"message": "User registered successfully"}), 201
+    return jsonify({"message": "User registered successfully", "data": data}), 201
 
 # -----------------------------
 # LOGIN API
@@ -62,7 +64,6 @@ def register():
 @app.route("/login", methods=['POST'])
 def login():
     data = request.get_json()
-
     email = data.get('email')
     password = data.get('password')
 
@@ -80,7 +81,42 @@ def login():
     return jsonify({"message": "Invalid email or password"}), 401
 
 # -----------------------------
-# TEST API (اختياري)
+# DELETE USER
+# -----------------------------
+@app.route("/delete_user", methods=['DELETE'])
+def delete_user():
+    data = request.get_json()
+    user_id = data.get('id')
+    email = data.get('email')
+
+    if not user_id and not email:
+        return jsonify({"message": "Provide id or email to delete"}), 400
+
+    cur = mysql.connection.cursor()
+    try:
+        if user_id:
+            cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+        else:
+            cur.execute("SELECT * FROM users WHERE email = %s", (email,))
+        user = cur.fetchone()
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+
+        if user_id:
+            cur.execute("DELETE FROM users WHERE id = %s", (user_id,))
+        else:
+            cur.execute("DELETE FROM users WHERE email = %s", (email,))
+        mysql.connection.commit()
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({"message": "Error deleting user", "error": str(e)}), 500
+    finally:
+        cur.close()
+
+    return jsonify({"message": "User deleted successfully"}), 200
+
+# -----------------------------
+# TEST API
 # -----------------------------
 @app.route("/test", methods=['GET'])
 def test():
