@@ -13,14 +13,7 @@ jobs:
 
    
     # ---------- BACKEND ----------
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
-
-    - name: Backend Install
-      working-directory: backend-flask
-      run: pip install -r requirements.txt
+    
 
     # ---------- DOCKER ----------
     - name: Login DockerHub
@@ -32,7 +25,7 @@ jobs:
     - name: Build & Push Frontend Image
       run: |
         TAG=${GITHUB_SHA::7}
-        docker build -t mazen2025/final-project-front:$TAG ./frontend-html
+        docker build -t mazen2025/final-project-front:$TAG ./frontend
         docker push mazen2025/final-project-front:$TAG
         docker tag mazen2025/final-project-front:$TAG mazen2025/final-project-front:latest
         docker push mazen2025/final-project-front:latest
@@ -40,7 +33,7 @@ jobs:
     - name: Build & Push Backend Image
       run: |
         TAG=${GITHUB_SHA::7}
-        docker build -t mazen2025/final-project-back:$TAG ./backend-flask
+        docker build -t mazen2025/final-project-back:$TAG ./backend
         docker push mazen2025/final-project-back:$TAG
         docker tag mazen2025/final-project-back:$TAG mazen2025/final-project-back:latest
         docker push mazen2025/final-project-back:latest
