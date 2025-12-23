@@ -11,30 +11,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # ---------- FRONTEND ----------
-    - name: Setup Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: "20"
-
-    - name: Frontend Install
-      working-directory: frontend
-      run: npm install
-
-    - name: Frontend Build
-      working-directory: frontend
-      run: npm run build
-
-    # ---------- BACKEND ----------
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
-
-    - name: Backend Install
-      working-directory: backend-flask
-      run: pip install -r requirements.txt
-
     # ---------- DOCKER ----------
     - name: Login DockerHub
       uses: docker/login-action@v3
