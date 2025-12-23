@@ -1,4 +1,4 @@
-name: Build & Push Docker Images
+name: CI - Build & Push Images
 
 on:
   push:
@@ -9,21 +9,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    - name: Login to DockerHub
+    # ---------- FRONTEND ----------
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: Frontend Install
+      working-directory: frontend-html
+      run: npm install
+
+    - name: Frontend Build
+      working-directory: frontend-html
+      run: npm run build
+
+    # ---------- BACKEND ----------
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: Backend Install
+      working-directory: backend-flask
+      run: pip install -r requirements.txt
+
+    # ---------- DOCKER ----------
+    - name: Login DockerHub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build & Push Frontend
+    - name: Build & Push Frontend Image
       run: |
-        docker build -t mazen2025/final-project-front:latest ./frontend-html
+        TAG=${GITHUB_SHA::7}
+        docker build -t mazen2025/final-project-front:$TAG ./frontend-html
+        docker push mazen2025/final-project-front:$TAG
+        docker tag mazen2025/final-project-front:$TAG mazen2025/final-project-front:latest
         docker push mazen2025/final-project-front:latest
 
-    - name: Build & Push Backend
+    - name: Build & Push Backend Image
       run: |
-        docker build -t mazen2025/final-project-back:latest ./backend-flask
+        TAG=${GITHUB_SHA::7}
+        docker build -t mazen2025/final-project-back:$TAG ./backend-flask
+        docker push mazen2025/final-project-back:$TAG
+        docker tag mazen2025/final-project-back:$TAG mazen2025/final-project-back:latest
         docker push mazen2025/final-project-back:latest
