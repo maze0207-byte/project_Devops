@@ -11,7 +11,8 @@ services:
 
   backend:
     build: ./backend-flask
-    image: mazen2025/backend:latest    # <-- اسم الصورة للـ Docker Hub
+    image: mazen2025/final-project-back:latest
+    # <-- اسم الصورة للـ Docker Hub
     environment:
       MYSQL_HOST: mysql
       MYSQL_USER: root
@@ -24,7 +25,8 @@ services:
 
   frontend:
     build: ./frontend-html
-    image: mazen2025/frontend:latest   # <-- اسم الصورة للـ Docker Hub
+    image: mazen2025/final-project-front:latest
+  # <-- اسم الصورة للـ Docker Hub
     environment:
       BACKEND_URL: http://backend:5000
     ports:
